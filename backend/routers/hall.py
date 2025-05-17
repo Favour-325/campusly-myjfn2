@@ -13,6 +13,7 @@ router = APIRouter(
 
 @router.post('/create', status_code=status.HTTP_201_CREATED)
 def create(request: schemas.Hall, db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Create a hall"""
     new_hall = models.Hall(**request.model_dump())
     db.add(new_hall)
     db.commit()
@@ -22,6 +23,7 @@ def create(request: schemas.Hall, db: Session = Depends(get_db), current_user = 
 
 @router.get('/', response_model=List[schemas.Hall])
 def get_all(db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Retrieve halls. Admin-only"""
     halls = db.query(models.Hall).all()
     
     if not halls:
@@ -31,6 +33,7 @@ def get_all(db: Session = Depends(get_db), current_user = Depends(get_current_us
 
 @router.put('/update/{id}', status_code=status.HTTP_202_ACCEPTED)
 def update(id: int, request: schemas.Hall, db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Update a hall. Admin-only"""
     hall = db.query(models.Hall).filter(models.Hall.id == id)
     
     if not hall.first():
@@ -43,6 +46,7 @@ def update(id: int, request: schemas.Hall, db: Session = Depends(get_db), curren
 
 @router.delete('/delete/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete(id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Delete a hall"""
     hall = db.query(models.Hall).filter(models.Hall.id == id)
     
     if not hall.first():

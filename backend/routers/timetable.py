@@ -11,8 +11,13 @@ router = APIRouter(
     tags=['Timetable']
 )
 
-@router.get('/', response_model=schemas.Timetable)
+"""
+NEEDS ATTENTION 
+IF ONLY STUDENT IS USED BY THE QUERY SO IT SHOULD BE STUDENT-ONLY
+"""
+@router.get('/', response_model=List[schemas.Timetable])
 def get(db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin', 'student', 'professor']))):
+    """Retrieve all the timetables for all courses with existing course ID"""
     student = db.query(models.Student).filter(models.Student.id == current_user.id).first()
     
     if not student:
@@ -31,6 +36,7 @@ def get(db: Session = Depends(get_db), current_user = Depends(get_current_user([
 
 @router.post('/create', status_code=status.HTTP_201_CREATED)
 def create(request: schemas.Timetable, db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Create timetable. Admin-only"""
     new_timetable = models.Timetable(**request.model_dump())
     db.add(new_timetable)
     db.commit()
@@ -40,6 +46,7 @@ def create(request: schemas.Timetable, db: Session = Depends(get_db), current_us
 
 @router.put('/update/{id}', status_code=status.HTTP_202_ACCEPTED)
 def update(id: int, request: schemas.Timetable, db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Update a specific timetable. Admin-only"""
     timetable = db.query(models.Timetable).filter(models.Timetable.id == id)
     
     if not timetable.first():
@@ -52,6 +59,7 @@ def update(id: int, request: schemas.Timetable, db: Session = Depends(get_db), c
 
 @router.delete('/delete/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete(id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Delete a specific timetable. Admin-only"""
     Timetable = db.query(models.Timetable).filter(models.Timetable.id == id)
     
     if not Timetable.first():

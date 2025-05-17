@@ -13,6 +13,7 @@ router = APIRouter(
 
 @router.post('/create', status_code=status.HTTP_201_CREATED)
 def create(request: schemas.Message, db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Create a message. Admin-only"""
     new_message = models.Message(**request.model_dump())
     db.add(new_message)
     db.commit()
@@ -22,6 +23,7 @@ def create(request: schemas.Message, db: Session = Depends(get_db), current_user
 
 @router.get('/', response_model=List[schemas.Message])
 def get_all(db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Retrieve all messages. Admin-only"""
     message = db.query(models.Message).all()
     
     if not message:
@@ -29,8 +31,10 @@ def get_all(db: Session = Depends(get_db), current_user = Depends(get_current_us
     
     return message
 
+
 @router.get('/student', response_model=List[schemas.Message])
-def get_all(db: Session = Depends(get_db), current_user = Depends(get_current_user(['student']))):
+def get_all_by_student(db: Session = Depends(get_db), current_user = Depends(get_current_user(['student']))):
+    """Retrieve student messages. Student-only"""
     message = db.query(models.Message).filter(models.Message.student_id == current_user.id).all()
     
     if not message:
@@ -40,6 +44,7 @@ def get_all(db: Session = Depends(get_db), current_user = Depends(get_current_us
 
 @router.delete('/delete/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete(id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Delete a message. Admin-only"""
     message = db.query(models.Message).filter(models.Message.id == id)
     
     if not message.first():

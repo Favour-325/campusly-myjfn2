@@ -1,3 +1,4 @@
+"""ENSURES ONLY VALID DATA FLOWS IN AND OUT"""
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from fastapi import File, UploadFile, Form
@@ -9,8 +10,10 @@ class LevelBase(BaseModel):
     name: str
 
 class Level(LevelBase):
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
 
 
 # === Department ===
@@ -18,8 +21,10 @@ class DepartmentBase(BaseModel):
     name: str
 
 class Department(DepartmentBase):
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
 
 
 # === Hall ===
@@ -27,9 +32,12 @@ class HallBase(BaseModel):
     code: str
     university_id: int
 
+
 class Hall(HallBase):
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
 
 
 # === Course ===
@@ -40,8 +48,10 @@ class CourseBase(BaseModel):
     department_id: int
 
 class Course(CourseBase):
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
         
 
 # === Resource ===
@@ -51,8 +61,10 @@ class ResourceBase(BaseModel):
     
 class Resource(ResourceBase):
     file_url: str
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
         
 
 # === Post ===
@@ -62,8 +74,10 @@ class PostBase(BaseModel):
     
 class Post(PostBase):
     file_url: str
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
         
 # === Comment ===
 class CommentBase(BaseModel):
@@ -71,8 +85,10 @@ class CommentBase(BaseModel):
     content: str
     
 class Comment(CommentBase):
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
         
 # === Reaction === 
 class ReactionBase(BaseModel):
@@ -86,12 +102,16 @@ class ReactionCount(BaseModel):
     like: int
     celebrate: int
     sad: int
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
     
 class Reaction(ReactionBase):
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
         
 
 
@@ -104,8 +124,10 @@ class ProfessorBase(BaseModel):
     password: str
 
 class Professor(ProfessorBase):
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
 
 
 # === Student ===
@@ -119,8 +141,10 @@ class StudentBase(BaseModel):
     level_id: int
 
 class Student(StudentBase):
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
 
 
 # === Admin ===
@@ -130,8 +154,10 @@ class AdminBase(BaseModel):
     university_id: int
 
 class Admin(AdminBase):
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
 
 
 # === University ===
@@ -142,8 +168,10 @@ class UniversityBase(BaseModel):
     phone: str
 
 class University(UniversityBase):
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
 
 
 # === Timetable ===
@@ -153,8 +181,10 @@ class TimetableBase(BaseModel):
     hall_id: int
 
 class Timetable(TimetableBase):
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
         
 # === Message ===
 class MessageBase(BaseModel):
@@ -165,8 +195,10 @@ class Message(MessageBase):
     subject: str
     content: str
     is_read: bool
-    class Config():
-        orm_mode = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
 
 
 class FeedbackBase(BaseModel):
@@ -174,16 +206,31 @@ class FeedbackBase(BaseModel):
     content: str
     
 class Feedback(FeedbackBase):
-    class Config():
-        orm_model = True
+    class Config:
+        model_config = {
+            "from_attributes": True
+        }
 
 
 # === Auth ===
 class Token(BaseModel):
+    """
+    This class represents the actual authentication token 
+    that is sent back to the client after login 
+    (usually a JWT token).
+    """
     access_token: str
     token_type: str
 
 class TokenData(BaseModel):
+    """
+    This class represents the data extracted 
+    from the token once it is decoded and verified.
+    """
+    """
+    - Decode and validate the JWT token sent with the request.
+    - Extract the user’s identity and role from the token (like their email and role):
+    """
     user: str | None = None
     role: str | None = None
     

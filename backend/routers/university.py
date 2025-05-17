@@ -13,6 +13,7 @@ router = APIRouter(
 
 @router.post('/create', status_code=status.HTTP_201_CREATED)
 def create(request: schemas.University, db: Session = Depends(get_db)):
+    """Create a univserty"""
     new_university = models.University(**request.model_dump())
     db.add(new_university)
     db.commit()
@@ -22,6 +23,7 @@ def create(request: schemas.University, db: Session = Depends(get_db)):
 
 @router.get('/', response_model=List[schemas.University])
 def get_all(db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin', 'student', 'professor']))):
+    """Retrieve a university"""
     university = db.query(models.University).all()
     
     if not university:
@@ -31,18 +33,20 @@ def get_all(db: Session = Depends(get_db), current_user = Depends(get_current_us
 
 @router.put('/update/{id}', status_code=status.HTTP_202_ACCEPTED)
 def update(id: int, request: schemas.University, db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Update a university. Admin-only"""
     university = db.query(models.University).filter(models.University.id == id)
     
     if not university.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'University with id {id} not found')
     
-    university.update(request.model_dump())
+    university.update(**request.model_dump())
     db.commit()
     
     return university
 
 @router.delete('/delete/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete(id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Delete a university"""
     university = db.query(models.University).filter(models.University.id == id)
     
     if not university.first():

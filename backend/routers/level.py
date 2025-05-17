@@ -13,6 +13,7 @@ router = APIRouter(
 
 @router.post('/create', status_code=status.HTTP_201_CREATED)
 def create(request: schemas.Level, db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Create a level"""
     new_level = models.Level(**request.model_dump())
     db.add(new_level)
     db.commit()
@@ -22,6 +23,7 @@ def create(request: schemas.Level, db: Session = Depends(get_db), current_user =
 
 @router.get('/', response_model=List[schemas.Level])
 def get_all(db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Retrieve all levels"""
     levels = db.query(models.Level).all()
     
     if not levels:
@@ -31,6 +33,7 @@ def get_all(db: Session = Depends(get_db), current_user = Depends(get_current_us
 
 @router.put('/update/{id}', status_code=status.HTTP_202_ACCEPTED)
 def update(id: int, request: schemas.Level, db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Update a level"""
     level = db.query(models.Level).filter(models.Level.id == id)
     
     if not level.first():
@@ -43,6 +46,7 @@ def update(id: int, request: schemas.Level, db: Session = Depends(get_db), curre
 
 @router.delete('/delete/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete(id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user(['admin']))):
+    """Delete a level"""
     level = db.query(models.Level).filter(models.Level.id == id)
     
     if not level.first():

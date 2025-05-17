@@ -12,8 +12,10 @@ router = APIRouter(
     tags=['Admin']
 )
 
+"""NEEDS CORRECTION CANNOT ACCESS EMAIL FROM schemas.Admin"""
 @router.post('/create', status_code=status.HTTP_201_CREATED)
 def create(request: schemas.Admin, db: Session = Depends(get_db)):
+    """Create an Admin"""
     new_admin = models.Admin(email=request.email, password=Hash.bcrypt(request.password))
     db.add(new_admin)
     db.commit()
@@ -23,6 +25,7 @@ def create(request: schemas.Admin, db: Session = Depends(get_db)):
 
 @router.get('/{id}', response_model=schemas.Admin)
 def get(id: int, db: Session = Depends(get_db), current_user: schemas.Admin = Depends(get_current_user(['admin']))):
+    """Retrieve an Admin"""
     admin = db.query(models.Admin).filter(models.Admin.id == id).first()
     
     if not admin:

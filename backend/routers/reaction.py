@@ -13,6 +13,7 @@ router = APIRouter(
 
 @router.post('/create', status_code=status.HTTP_201_CREATED)
 def create(request: schemas.Reaction, db: Session = Depends(get_db), current_user = Depends(get_current_user(['student']))):
+    """Create a reaction. Student-only"""
     new_reaction = models.Reaction(**request.model_dump())
     db.add(new_reaction)
     db.commit()
@@ -22,6 +23,7 @@ def create(request: schemas.Reaction, db: Session = Depends(get_db), current_use
 
 @router.get('/', response_model=List[schemas.Reaction])
 def get_all(db: Session = Depends(get_db), current_user = Depends(get_current_user(['student']))):
+    """Retrieve all reactions details. Student-Only"""
     reaction = db.query(models.Reaction).all()
     
     if not reaction:
@@ -30,13 +32,21 @@ def get_all(db: Session = Depends(get_db), current_user = Depends(get_current_us
     return reaction
 
 @router.get('/count', response_model=List[schemas.ReactionCount])
-def get_count(post_id: int, emoji: str, db: Session = Depends(get_db), current_user = Depends(get_current_user(['student']))):
-    if emoji not in ['like', 'celebrate', 'sad']:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Invalid emoji type')
-    
-    reaction = db.query(models.Reaction).filter(getattr(models.Reaction, emoji) == True, models.Reaction.post_id == post_id).count()
-    
-    return reaction
+def get_count(post_id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user(['student']))):
+    """Get counts for all reaction types for a given post"""
+
+    like_count = db.query(models.Reaction).filter(models.Reaction.like == True, models.Reaction.post_id == post_id).count()
+    celebrate_count = db.query(models.Reaction).filter(models.Reaction.celebrate == True, models.Reaction.post_id == post_id).count()
+    sad_count = db.query(models.Reaction).filter(models.Reaction.sad == True, models.Reaction.post_id == post_id).count()
+
+    result = {
+        "post_id": post_id,
+        "like": like_count,
+        "celebrate": celebrate_count,
+        "sad": sad_count
+    }
+
+    return [result]  # List of one ReactionCount object
 
 """ @router.delete('/delete/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete(id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user(['student']))):
