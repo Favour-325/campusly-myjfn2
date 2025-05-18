@@ -19,7 +19,7 @@ def create(request: schemas.Feedback, db: Session = Depends(get_db), current_use
     # Count existing feedbacks in the last week
     """Ensure only 10 feedbacks per week are possible per student"""
     total = count_feedbacks_last_week(db=db, student_id=current_user.id)
-    if total >= 10:
+    if total >= 11:
         raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Feedbacks limit reached (10 per week)")
 
     new_feedback = models.Feedback(**request.model_dump())

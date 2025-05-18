@@ -19,7 +19,7 @@ def create(request: schemas.Comment, db: Session = Depends(get_db), current_user
     """Ensure only 4 comments per day are possible per student"""
     # Count existing comments today
     total = count_comments_today(db=db, student_id=current_user.id)
-    if total >= 4:
+    if total >= 5:
         raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Comments limit reached (4 per day)")
     
 
