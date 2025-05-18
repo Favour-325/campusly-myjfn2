@@ -13,11 +13,6 @@ class Hash:
     - Verify that a provided plain-text password matches a stored bcrypt hash.
 
     All methods are static, meaning they can be called without creating an instance of the class.
-
-    Example:
-        >>> hashed = Hash.bcrypt("my_password")
-        >>> Hash.verify("my_password", hashed)
-        True
     """
 
     @staticmethod
